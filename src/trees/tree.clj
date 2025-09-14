@@ -1,25 +1,36 @@
 (ns trees.tree)
 
-(defn right-angle-child?
-  [_parent siblings]
-  (boolean (> 2 (count siblings))))
+(defn enumerated-branches-children?
+  "Returns a fn that returns true until n children have been produced"
+  [n]
+  (fn children? [_parents siblings]
+    (boolean (> n (count siblings)))))
 
-(defn right-angle-angle
-  [_parent siblings]
-  (let [ct (count siblings)]
-    (if (zero? ct) -45 90)))
+(defn enumerated-spread-angle
+  "Takes a spread between first and last branches, and the number of total branches
+   and returns a fn that will space the branches evenly within that space"
+  [spread n]
+  (let [initial-angle (- (/ spread 2))
+        gap-angle     (/ spread (dec n))]
+    (fn branch-angle [_parents siblings]
+      (if (empty? siblings) initial-angle gap-angle))))
 
-(defn halving-branches-length
-  "Each branch has a length of half its parent."
-  [parent _siblings]
-  (/ (:length parent) 2))
+(defn scaled-branch-length
+  "Returns a fn that scales each branch to `scale` of its parent's length"
+  [scale]
+  (fn branch-length [parent _siblings]
+    (* (:length parent) scale)))
 
-(defn smallest-branch-32-children?
-  "Returns true if branch was larger than 32"
-  [_parent _siblings branch]
-  (> (:length branch) 32))
+(defn grow-until-drop-below-length-children?
+  "Returns a fn that returns true unless a branch is at or below given length"
+  [length]
+  (fn children? [_parent _siblings branch]
+    (> (:length branch) length)))
 
-;; See trees.branch/draw for the format of a branch
+(def right-angle-child? (enumerated-branches-children? 2))
+(def right-angle-angle (enumerated-spread-angle 90 2))
+(def halving-branches-length (scaled-branch-length 1/2))
+(def smallest-branch-32-children? (grow-until-drop-below-length-children? 32))
 
 (defn base-angle
   "Takes a (growing) branch and it's chldren to date and returns the angle
