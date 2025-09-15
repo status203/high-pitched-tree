@@ -1,37 +1,5 @@
 (ns trees.tree)
 
-(defn enumerated-branches-children?
-  "Returns a fn that returns true until n children have been produced"
-  [n]
-  (fn children? [_parents siblings]
-    (boolean (> n (count siblings)))))
-
-(defn enumerated-spread-angle
-  "Takes a spread between first and last branches, and the number of total branches
-   and returns a fn that will space the branches evenly within that space"
-  [spread n]
-  (let [initial-angle (- (/ spread 2))
-        gap-angle     (/ spread (dec n))]
-    (fn branch-angle [_parents siblings]
-      (if (empty? siblings) initial-angle gap-angle))))
-
-(defn scaled-branch-length
-  "Returns a fn that scales each branch to `scale` of its parent's length"
-  [scale]
-  (fn branch-length [parent _siblings]
-    (* (:length parent) scale)))
-
-(defn grow-until-drop-below-length-children?
-  "Returns a fn that returns true unless a branch is at or below given length"
-  [length]
-  (fn children? [_parent _siblings branch]
-    (> (:length branch) length)))
-
-(def right-angle-child? (enumerated-branches-children? 2))
-(def right-angle-angle (enumerated-spread-angle 90 2))
-(def halving-branches-length (scaled-branch-length 1/2))
-(def smallest-branch-32-children? (grow-until-drop-below-length-children? 32))
-
 (defn base-angle
   "Takes a (growing) branch and it's chldren to date and returns the angle
    from which the next child's branch should be calculated.
@@ -60,8 +28,8 @@
 (defn grow
   "opts (all are mandatory)
      :branch-angle - [parents siblingls] -> degrees clockwise
-     called to calculate the relative angle from a branch's last sibling or from 
-     the parents angle if it's the first child.
+     called to calculate the relative clockwise angle in degrees from a branch's
+     last sibling or from the parents angle if it's the first child.
 
      :branch-length - [parents branch] -> length
      called to calculate the length of the branch
@@ -111,6 +79,14 @@
        (assoc parent :children siblings)))))
 
 (comment
+  (require '[trees.algo.angle :as angle]
+           '[trees.algo.length :as length]
+           '[trees.algo.children :as children])
+  (def right-angle-child? (children/enumerated-branches-children? 2))
+  (def right-angle-angle (angle/enumerated-spread-angle 90 2))
+  (def halving-branches-length (length/scaled-branch-length 1/2))
+  (def smallest-branch-32-children? (children/grow-until-drop-below-length-children? 32))
+
   (grow 200 90 {:another-child? right-angle-child?
                 :branch-angle   right-angle-angle
                 :branch-length  halving-branches-length
