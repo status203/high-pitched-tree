@@ -1,14 +1,24 @@
-(ns trees.algo.children)
+(ns trees.algo.children
+  (:require [clojure.zip :as z]
+            [trees.util :as u]))
 
-(defn enumerated-branches-children?
-  "Returns a fn that returns true until n children have been produced"
+(defn enumerated-branches-child?
+  "Returns a fn that takes a zipper and returns true if the node has fewer than
+   n children"
   [n]
-  (fn children? [_parents siblings]
-    (boolean (> n (count siblings)))))
-
+  (fn add-child? [loc]
+    (boolean (> n (count (-> loc z/node :children))))))
 
 (defn grow-until-drop-below-length-children?
-  "Returns a fn that returns true unless a branch is at or below given length"
+  "Returns a fn that takes a zipper and returns true unless the branch it 
+   represents is at or below the given length"
   [length]
-  (fn children? [_parent _siblings branch]
-    (> (:length branch) length)))
+  (fn children? [loc]
+    (> (-> loc z/node :length) length)))
+
+(defn enumerated-depth-children?
+  "Returns a fn that takes a zipper and returns true unless the branch it
+   represents has the given depth"
+  [depth]
+  (fn children? [loc]
+    (< (u/depth loc) depth)))

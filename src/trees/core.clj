@@ -15,10 +15,10 @@
 
 (defn setup []
   (q/background 0xDD)
-  (let [tree (tree/grow 200 90 {:another-child? (children/enumerated-branches-children? 7)
-                                :branch-angle   (angle/enumerated-spread-angle 150 7 50)
+  (let [tree (tree/grow 200 90 {:add-child? (children/enumerated-branches-child? 6)
+                                :branch-angle   (angle/jittered-enumerated-spread-angle 120 6 0 10)
                                 :branch-length  (length/scaled-branch-length 1/2)
-                                :children?      (children/grow-until-drop-below-length-children? 32)})]
+                                :children?      (children/enumerated-depth-children? 4)})]
     (q/with-translation [(/ width 2) height]
       (doseq [branch (tree-seq :children :children tree)]
         (q/line (downrightify-point (:start branch)) 
