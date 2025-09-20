@@ -13,12 +13,10 @@
      (fn branch-angle [loc]
        (if (u/has-children? loc) gap-angle initial-angle)))))
 
-;; todo: generalise (let no one else's work evade your eyes)
 (defn jittered-enumerated-spread-angle
   "Returns a fn similar to enumerated-spread-angle but adds a random amount 
    between ±jitter to each angle"
-  [spread n offset jitter] 
-  (let [base-fn (enumerated-spread-angle spread n offset)]
-    (fn branch-angle [loc]
-      (+ (base-fn loc)
-         (u/jitter jitter)))))
+  [spread n offset jitter]
+  (u/lift-to-loc-fn +
+                 (enumerated-spread-angle spread n offset)
+                 (u/jitter-loc jitter)))
