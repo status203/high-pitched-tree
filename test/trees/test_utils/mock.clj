@@ -9,7 +9,7 @@
 ;; trunk
 (def branch1 {:start [0 0]
               :end       [32 32]
-              :rel-angle 90
+              :rel-angle 0
               :abs-angle 90
               :length    32
               :children  '()})
@@ -34,8 +34,8 @@
 ;;
 
 (def trunk-only branch1)
-(def one-branch (update branch1 :children conj branch2))
-(def two-branches (update one-branch :children conj branch3))
+(def one-branch (-> trunk-only u/tree-zipper (z/insert-child branch2) z/root))
+(def two-branches (-> one-branch u/tree-zipper (z/insert-child branch3) z/root))
 
 ;;
 ;; Zipper locations
@@ -48,5 +48,6 @@
 (def loc-one-branch-1 "trunk" (-> one-branch u/tree-zipper))
 (def loc-one-branch-2 "second layer, sole branch" (-> one-branch u/tree-zipper z/down))
 (def loc-two-branches-1 "trunk" (-> two-branches u/tree-zipper))
-(def loc-two-branches-2 "second layer, rhs" (-> two-branches u/tree-zipper z/down ))
-(def loc-two-branches-3 "second layer, lhs" (-> two-branches u/tree-zipper z/down z/right))
+(def loc-two-branches-2 "second layer, first branch" (-> two-branches u/tree-zipper z/down z/right))
+(def loc-two-branches-3 "second layer, second branch" (-> two-branches u/tree-zipper z/down))
+

@@ -1,40 +1,48 @@
-(ns trees.tree-tests
+(ns trees.tree-test
   (:require [clojure.test :refer [deftest is testing]]
-            [trees.tree :as tree]
+            [trees.test-utils.mock :as mock]
             [trees.algo.angle :as angle]
             [trees.algo.children :as children]
-            [trees.algo.length :as length]))
+            [trees.algo.length :as length]
+            [trees.tree :as sut]))
+
+(deftest base-angle-tests
+  (is (= 90 (sut/base-angle mock/loc-trunk-only-1))
+      "Base angle of trunk calculation should be 90")
+  (is (= 90 (sut/base-angle mock/loc-one-branch-2))
+      "Base angle of single branch should be 90")
+  (is (= 45 (sut/base-angle mock/loc-two-branches-3))
+      "Base angle of second branch should be 45"))
 
 (def base-opts
-  {:branch-angle (angle/enumerated-spread-angle 90 2 -10)
-   :branch-length (length/scaled-branch-length 0.7)
+  {:branch-angle (angle/with-vertical-trunk
+                   (angle/enumerated-spread-angle 90 2 -10))
+   :branch-length (length/depth-decay-length 100 0.7)
    :add-child? (children/enumerated-branches-child? 2)
    :children? (children/enumerated-depth-children? 3)})
 
 (deftest grow-tests
   (testing "growing a simple tree"
-    (let [tree (tree/grow 50 90 base-opts)]
+    (let [tree (sut/grow base-opts)]
       (is (= 7 (count (tree-seq map? :children tree))))))
 
   (testing "tree structure: children counts at each level"
-    (let [tree (tree/grow 50 90 base-opts)]
+    (let [tree (sut/grow base-opts)]
       (is (= 2 (count (:children tree))))
       (is (= 2 (-> tree :children first :children count)))
       (is (-> tree :children first :children first :children empty?))))
 
   (testing "branch lengths"
     (let [opts (assoc base-opts
-                 :branch-length (length/scaled-branch-length 0.7)
-                 :children? (children/enumerated-depth-children? 2))
-          tree (tree/grow 100 90 opts)
+                      :children? (children/enumerated-depth-children? 2))
+          tree (sut/grow opts)
           child-length (-> tree :children first :length)]
       (is (== 70.0 child-length))))
 
   (testing "branch angles"
     (let [opts (assoc base-opts
-                 :branch-length (length/scaled-branch-length 1)
-                 :children? (children/enumerated-depth-children? 2))
-          tree (tree/grow 50 90 opts)
+                      :children? (children/enumerated-depth-children? 2))
+          tree (sut/grow opts)
           angles (set (map :abs-angle (:children tree)))]
       (is (= #{35 125} angles))))
 
@@ -43,6 +51,6 @@
                 :branch-length (constantly 0)
                 :add-child? (constantly false)
                 :children? (constantly false)}
-          tree (tree/grow 50 90 opts)]
+          tree (sut/grow opts)]
       (is (= 1 (count (tree-seq map? :children tree))))
       (is (empty? (:children tree))))))

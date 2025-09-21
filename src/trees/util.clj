@@ -16,7 +16,7 @@
  "Lifts an operator * to work on the results of fns that take a zipper loc.
   The lifted fn takes a zipper loc and applies the operator to the results
   of applying each fn to that loc."
- ([op] (fn [loc] (op)))
+ ([op] (fn [_loc] (op)))
  ([op f] (fn [loc] (op (f loc))))
  ([op f g] (fn [loc] (op (f loc) (g loc))))
  ([op f g & rst]
@@ -42,10 +42,10 @@
 
 (defn depth
   "Returns the depth of a zipper"
-  ([loc] (depth loc 1))
+  ([loc] (depth loc 0))
   ([loc acc]
-   (if-let [parent (z/up loc)]
-     (recur parent (inc acc))
+   (if loc
+     (recur (z/up loc) (inc acc))
      acc)))
 
 (defn stochastic-round
@@ -60,4 +60,69 @@
   (let [f    (Math/floor x)
         frac (- x f)]
     (long (if (< (rand) frac) (inc f) f))))
+
+(defmacro defdepth-router
+  "Define NAME as a depth-dispatching fn of one arg (a zipper loc).
+
+   LHS spec forms (checked in order):
+     - integer N        -> (= d N)
+     - [lo hi]          -> inclusive;
+                           (MUST be literal: lo integer; hi integer or :+inf)
+     - predicate (fn)   -> called with loc; truthy => match
+     - :else            -> catch-all
+
+   Example:
+     (defdepth-router choose-angle
+       1         angle-a
+       [2 4]     angle-b
+       [5 :+inf] angle-c
+       (fn [loc] (odd? (trees.util/depth loc))) angle-odd
+       :else     angle-default)"
+  [name & pairs]
+  (when (odd? (count pairs))
+    (throw (ex-info "defdepth-router requires an even number of forms (spec/handler pairs)."
+                    {:given (count pairs)})))
+  (let [loc-sym (gensym "loc")
+        d-sym   (gensym "d")
+        clauses (for [[spec handler] (partition 2 pairs)]
+                  (cond
+                    (integer? spec)
+                    [`(= ~d-sym ~spec) `(~handler ~loc-sym)]
+
+                    (and (vector? spec) (= 2 (count spec)))
+                    (let [[lo hi] spec]
+                      (cond
+                        (and (integer? lo) (integer? hi))
+                        [`(<= ~lo ~d-sym ~hi) `(~handler ~loc-sym)]
+                        (and (integer? lo) (= hi :+inf))
+                        [`(<= ~lo ~d-sym) `(~handler ~loc-sym)]
+                        :else
+                        (throw (ex-info "Range must be literal: [lo hi] with lo integer and hi integer or :+inf."
+                                        {:spec spec}))))
+
+                    (= spec :else)
+                    [:else `(~handler ~loc-sym)]
+
+                    :else
+                    [`(let [p# ~spec]
+                        (when-not (fn? p#)
+                          (throw (ex-info "Predicate spec did not resolve to a function."
+                                          {:spec '~spec})))
+                        (boolean (p# ~loc-sym)))
+                     `(~handler ~loc-sym)]))
+        has-else? (some #(= (first %) :else) clauses)
+        cond-forms (mapcat identity clauses)
+        body (if has-else?
+               `(cond ~@cond-forms)
+               `(let [res# (cond ~@cond-forms :else ::no-match)]
+                  (if (= res# ::no-match)
+                    (throw (ex-info "No matching depth-router clause and no :else provided."
+                                    {:depth ~d-sym}))
+                    res#)))]
+    `(def ~name
+       (fn [~loc-sym]
+         (let [~d-sym (depth ~loc-sym)]
+           ~body)))))
+
+
 

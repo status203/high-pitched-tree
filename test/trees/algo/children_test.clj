@@ -1,4 +1,4 @@
-(ns trees.algo.children-tests
+(ns trees.algo.children-test
   (:require [clojure.test :refer [deftest is]]
             [trees.test-utils.mock :as mock]
             [trees.algo.children :as sut]))
@@ -14,7 +14,7 @@
 
 (deftest enumerated-depth-children?-tests
   (let [children? (sut/enumerated-depth-children? 2)]
-    #_(is (= true (children? mock/loc-trunk-only-1))
+    (is (= true (children? mock/loc-trunk-only-1))
         "Trunk should have children")
     (is (= false (children? mock/loc-one-branch-2))
         "Depth 2 branch should not have children")))

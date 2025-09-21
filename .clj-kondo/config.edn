@@ -1,0 +1,3 @@
+{:lint-as
+ {trees.util/defdepth-router clojure.core/def
+  quil.core/defsketch clojure.core/def}}

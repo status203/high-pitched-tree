@@ -1,11 +1,11 @@
 (ns trees.algo.length
-  (:require [clojure.zip :as z]))
+  (:require [trees.util :as u]))
 
-(defn scaled-branch-length
+(defn depth-decay-length
   "Returns a function that, given a zipper positioned on a branch node
    where a child will be added, computes the new child branch's length
-   by scaling the parent's :length by `scale`."
-  [scale]
+   by scaling the provided length by scale^(depth-1)."
+  [length scale]
   (fn branch-length [loc]
-    (* (-> loc z/node :length) scale)))
-
+    (* length
+       (Math/pow scale (dec (u/depth loc))))))

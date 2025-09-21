@@ -13,20 +13,29 @@
   [[x y]]
   [x (- y)])
 
+(def narrow-jittered-with-6-kids
+  (tree/grow {:add-child?     (children/enumerated-branches-child? 6)
+              :branch-angle   (angle/with-vertical-trunk
+                                (angle/jittered-enumerated-spread-angle 120 6 0 10))
+              :branch-length  (length/depth-decay-length 200 1/2)
+              :children?      (children/enumerated-depth-children? 4)}))
+(def depth-4-binomial
+  (tree/grow {:children?     (children/enumerated-depth-children? 4)
+              :branch-length (length/depth-decay-length 200 0.7)
+              :branch-angle  (angle/with-vertical-trunk
+                               (angle/enumerated-spread-angle 90 2 0))
+              :add-child?    (children/enumerated-branches-child? 2)}))
 (defn setup []
   (q/background 0xDD)
-  (let [tree (tree/grow 200 90 {:add-child? (children/enumerated-branches-child? 6)
-                                :branch-angle   (angle/jittered-enumerated-spread-angle 120 6 0 10)
-                                :branch-length  (length/scaled-branch-length 1/2)
-                                :children?      (children/enumerated-depth-children? 4)})]
-    (q/with-translation [(/ width 2) height]
-      (doseq [branch (tree-seq :children :children tree)]
-        (q/line (downrightify-point (:start branch)) 
-                (downrightify-point (:end branch)))))))
+  (q/with-translation [(/ width 2) height]
+    (doseq [branch (tree-seq :children :children narrow-jittered-with-6-kids)]
+      (q/line (downrightify-point (:start branch)) 
+              (downrightify-point (:end branch))))))
 
 (defn draw []
   nil)
 
+#_{:clojure-lsp/ignore [:clojure-lsp/unused-public-var]}
 (q/defsketch trees
   :title "Fractal Trees"
   :size  [width height]
