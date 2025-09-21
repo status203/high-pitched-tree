@@ -14,22 +14,14 @@
       (vertical-trunk loc)
       (angle-fn loc))))
 
-(defn enumerated-spread-angle
+(defn regularly-spread
   "Takes a spread between first and last branches, and the number of total branches
    and returns a fn that will space the branches evenly within that space.
-   offset is the degrees clockwise that the centre of the spread is rotated."
-  ([spread n] (enumerated-spread-angle spread n 0))
+   offset is the degrees clockwise that the spread is rotated."
+  ([spread n] (spread spread n 0))
   ([spread n offset]
    (let [initial-angle (+ (- (/ spread 2))
                           offset)
          gap-angle     (/ spread (dec n))]
      (fn branch-angle [loc]
        (if (z/right loc) gap-angle initial-angle)))))
-
-(defn jittered-enumerated-spread-angle
-  "Returns a fn similar to enumerated-spread-angle but adds a random amount 
-   between ±jitter to each angle"
-  [spread n offset jitter]
-  (u/lift-to-loc-fn +
-                 (enumerated-spread-angle spread n offset)
-                 (u/jitter-loc jitter)))

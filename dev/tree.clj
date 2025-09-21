@@ -11,9 +11,10 @@
 
 
 ;; Simple binomial tree with depth 2 and spread of 90°
-(tree/grow {:children?     (children/enumerated-depth-children? 2)
-            :branch-length (length/depth-decay-length 100 0.7)
+(tree/grow {:branch-length (length/ratio 100 0.7)
             :branch-angle  (angle/with-vertical-trunk
-                             (angle/enumerated-spread-angle 90 2 0))
-            :add-child?    (children/enumerated-branches-child? 2)})
+                             (angle/regularly-spread 90 2 0))
+            :add-child?    (u/combine-with :and
+                                           (children/count<= 2)
+                                           (children/depth<= 2))})
 

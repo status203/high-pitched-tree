@@ -65,19 +65,15 @@
   "opts (all are mandatory):
    
      :branch-angle - [child-zipper] -> degrees clockwise
-     called to calculate the *relative* clockwise angle in degrees of a new child
-     from a branch's last child or from the branch's angle if it's the first child.
+     called to calculate the *relative* clockwise angle in degrees of a new
+     child from a branch's last child or from the branch's parent angle if it's
+     the first child (the trunk's parent is assumed to have an angle of 90°).
 
      :branch-length - [child-zipper] -> length
      called to calculate the length of a new child branch
 
-     :children? - [ptb-zipper] -> bool
-     called to decide whether the potential parent-to-be branch should have any
-     children
-
      :add-child? - [ptb-zipper] -> bool
-     if a branch should have children then this is called each time to check
-      whether another child should be added
+     Called on a (potential) parent-to-be node repeatedly until it returns false
 
    A branch is a map of 
      :start     [x y]
@@ -91,22 +87,18 @@
     
    For now, assumes a single trunk (which is considered to have a depth of 1).
    The parent zipper of the trunk is nil and considered depth 0."
-  ([{:keys [children?] :as opts}]
-   (let [loc (-> (insert-placeholder-branch nil)
-                 (finalise-branch opts))]
-     (if (children? loc)
-       (grow loc opts)
-       (z/root loc))))
-  ([loc {:keys [add-child? children?] :as opts}]
+  ([opts]
+   (-> (insert-placeholder-branch nil)
+       (finalise-branch opts)
+       (grow opts)))
+  ([loc {:keys [add-child?] :as opts}]
    (cond
      (add-child? loc)
      (let [loc' (-> loc
-                   (insert-placeholder-branch)
-                   (finalise-branch opts))]
-       (if (children? loc')
-         (recur loc' opts)
-         (recur (z/up loc') opts)))
-   
+                    (insert-placeholder-branch)
+                    (finalise-branch opts))]
+       (recur loc' opts))
+
      (z/up loc) (recur (z/up loc) opts)
-   
-      :else (z/root loc))))
+
+     :else (z/root loc))))

@@ -3,8 +3,8 @@
             [trees.test-utils.mock :as mock]
             [trees.algo.length :as sut]))
 
-(deftest depth-decay-length-test
-  (let [length-fn (sut/depth-decay-length 32 0.5)]
+(deftest ratio-test
+  (let [length-fn (sut/ratio 32 0.5)]
     ;; Assuming mock/loc-trunk-only-1 is depth 1, next level is depth 2, etc.
     (is (= 32.0 (length-fn mock/loc-trunk-only-1)) 
         "Trunk should have full length")

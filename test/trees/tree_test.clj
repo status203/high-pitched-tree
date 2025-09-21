@@ -4,6 +4,7 @@
             [trees.algo.angle :as angle]
             [trees.algo.children :as children]
             [trees.algo.length :as length]
+            [trees.util :as u]
             [trees.tree :as sut]))
 
 (deftest base-angle-tests
@@ -16,10 +17,11 @@
 
 (def base-opts
   {:branch-angle (angle/with-vertical-trunk
-                   (angle/enumerated-spread-angle 90 2 -10))
-   :branch-length (length/depth-decay-length 100 0.7)
-   :add-child? (children/enumerated-branches-child? 2)
-   :children? (children/enumerated-depth-children? 3)})
+                   (angle/regularly-spread 90 2 -10))
+   :branch-length (length/ratio 100 0.7)
+   :add-child? (u/combine-with :and
+                               (children/count<= 2)
+                               (children/depth<= 3))})
 
 (deftest grow-tests
   (testing "growing a simple tree"
@@ -34,14 +36,18 @@
 
   (testing "branch lengths"
     (let [opts (assoc base-opts
-                      :children? (children/enumerated-depth-children? 2))
+                      :add-child? (u/combine-with :and
+                                                  (children/count<= 2)
+                                                  (children/depth<= 2)))
           tree (sut/grow opts)
           child-length (-> tree :children first :length)]
       (is (== 70.0 child-length))))
 
   (testing "branch angles"
     (let [opts (assoc base-opts
-                      :children? (children/enumerated-depth-children? 2))
+                      :add-child? (u/combine-with :and
+                                                  (children/count<= 2)
+                                                  (children/depth<= 2)))
           tree (sut/grow opts)
           angles (set (map :abs-angle (:children tree)))]
       (is (= #{35 125} angles))))
@@ -49,8 +55,7 @@
   (testing "single trunk (no children)"
     (let [opts {:branch-angle (constantly 0)
                 :branch-length (constantly 0)
-                :add-child? (constantly false)
-                :children? (constantly false)}
+                :add-child? (constantly false)}
           tree (sut/grow opts)]
       (is (= 1 (count (tree-seq map? :children tree))))
       (is (empty? (:children tree))))))

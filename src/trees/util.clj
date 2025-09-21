@@ -12,28 +12,42 @@
 
 (def tree-zipper (partial z/zipper map? tree-zipper-children tree-zipper-make-node))
 
-(defn lift-to-loc-fn
- "Lifts an operator * to work on the results of fns that take a zipper loc.
-  The lifted fn takes a zipper loc and applies the operator to the results
-  of applying each fn to that loc."
- ([op] (fn [_loc] (op)))
- ([op f] (fn [loc] (op (f loc))))
- ([op f g] (fn [loc] (op (f loc) (g loc))))
- ([op f g & rst]
-  (let [fns (list* f g rst)]
-    (fn [loc] (reduce op (map #(% loc) fns))))))
+(defn combine-with 
+  "Lifts an operator [X] to work on the results [zipper]->X
+   
+   Use :and/:or for predicates as `and`/`or` are macros"
+  [op & fs]
+  (cond
+    ;; AND: stop on first falsey
+    (= op :and)
+    (fn [loc]
+      (loop [fs fs]
+        (if (empty? fs)
+          true
+          (let [v ((first fs) loc)]
+            (if v
+              (recur (rest fs))
+              false)))))
 
-(defn jitter
-  "Return a random fp number between -a and a"
-  [a]
-  (- (* 2 a (rand))
-     a))
+    ;; OR: stop on first truthy, return that truthy value
+    (= op :or)
+    (fn [loc]
+      (loop [fs fs]
+        (if (empty? fs)
+          false
+          (let [v ((first fs) loc)]
+            (if v
+              v
+              (recur (rest fs)))))))
 
-(defn jitter-loc
-  "Return a fn that takes a zipper loc, ignores it, and returns a random fp 
-   number between -a and a"
-  [a]
-  (fn [_] (jitter a)))
+    ;; Any plain function op (e.g. +, max) → evaluate all
+    (fn? op)
+    (let [j (apply juxt fs)]
+      (fn [loc] 
+        (apply op (j loc))))
+
+    :else
+    (throw (ex-info "Unsupported op" {:op op}))))
 
 (defn has-children?
   "Returns whether the branch represented by the zipper has any children"

@@ -22,24 +22,37 @@
   (is (= 2 (sut/depth mock/loc-two-branches-3))
       "Depth of leaf in trunk+branches should be 2"))
 
-(deftest lift-loc-fn-tests
-  (is (= 0 ((sut/lift-to-loc-fn +) mock/loc-one-branch-1))
-      "lift-loc-fn with no fns should return op identity")
-  (is (= 1 ((sut/lift-to-loc-fn + sut/depth) mock/loc-one-branch-1))
-      "lift-loc-fn with one fn should work")
-  (is (= 2 ((sut/lift-to-loc-fn + sut/depth sut/depth) mock/loc-one-branch-1))
-      "lift-loc-fn with two fns should work")
-  (is (= 12 ((sut/lift-to-loc-fn + sut/depth sut/depth sut/depth sut/depth sut/depth sut/depth)
-            mock/loc-one-branch-2))
-      "lift-loc-fn with many fns should work"))
+(deftest combine-with-tests
+  (is (= 1 ((sut/combine-with + sut/depth) mock/loc-one-branch-1))
+      "combine-with + with one fn should work")
+  (is (= 2 ((sut/combine-with + sut/depth sut/depth) mock/loc-one-branch-1))
+      "combine-with + with two fns should work")
+  (is (= 12 ((sut/combine-with + sut/depth sut/depth sut/depth sut/depth sut/depth sut/depth)
+             mock/loc-one-branch-2))
+      "combine-with + with many fns should work")
 
+  ;; :and tests
+  (is (= true ((sut/combine-with :and (constantly true) (constantly true)) mock/loc-trunk-only-1))
+      "combine-with :and returns true if all are true")
+  (is (= false ((sut/combine-with :and (constantly true) (constantly false)) mock/loc-trunk-only-1))
+      "combine-with :and returns false if any are false")
+  (is (= false ((sut/combine-with :and (constantly false) (constantly true)) mock/loc-trunk-only-1))
+      "combine-with :and short-circuits on first false")
+
+  ;; :or tests
+  (is (= true ((sut/combine-with :or (constantly false) (constantly true)) mock/loc-trunk-only-1))
+      "combine-with :or returns true if any are true")
+  (is (= false ((sut/combine-with :or (constantly false) (constantly false)) mock/loc-trunk-only-1))
+      "combine-with :or returns false if all are false")
+  (is (= true ((sut/combine-with :or (constantly true) (constantly false)) mock/loc-trunk-only-1))
+      "combine-with :or short-circuits on first true"))
 
 ;; 
 ;; Depth router
 ;;
 
-
 (defn- fake-depth [loc] (::depth (z/node loc)))
+
 (defn- loc-with-depth [n]
   (z/zipper (constantly false) (constantly nil) (fn [n _] n) {::depth n}))
 

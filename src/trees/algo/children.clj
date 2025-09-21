@@ -2,21 +2,21 @@
   (:require [clojure.zip :as z]
             [trees.util :as u]))
 
-(defn enumerated-branches-child?
+(defn count<=
   "Returns a fn that takes a zipper and returns true if the node has fewer than
    n children"
   [n]
   (fn add-child? [loc]
     (boolean (> n (count (-> loc z/node :children))))))
 
-(defn enumerated-depth-children?
+(defn depth<=
   "Returns a fn that takes a zipper and returns true unless the branch it
-   represents has the given depth"
-  [depth]
+   represents has the given max depth"
+  [max-depth]
   (fn children? [loc]
-    (< (u/depth loc) depth)))
+    (< (u/depth loc) max-depth)))
 
-(defn grow-until-drop-below-length-children?
+(defn length>=
   "Returns a fn that takes a zipper and returns true unless the branch it 
    represents is at or below the given length"
   [length]
