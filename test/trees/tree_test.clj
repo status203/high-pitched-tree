@@ -3,8 +3,8 @@
             [trees.test-utils.mock :as mock]
             [trees.algo.angle :as angle]
             [trees.algo.children :as children]
+            [trees.algo.combine :as combine]
             [trees.algo.length :as length]
-            [trees.util :as u]
             [trees.tree :as sut]))
 
 (deftest base-angle-tests
@@ -16,10 +16,10 @@
       "Base angle of second branch should be 45"))
 
 (def base-opts
-  {:branch-angle (angle/with-vertical-trunk
+  {:branch-angle (sut/with-vertical-trunk
                    (angle/regularly-spread 90 2 -10))
    :branch-length (length/ratio 100 0.7)
-   :add-child? (u/combine-with :and
+   :add-child? (combine/with :and
                                (children/count<= 2)
                                (children/depth<= 3))})
 
@@ -36,7 +36,7 @@
 
   (testing "branch lengths"
     (let [opts (assoc base-opts
-                      :add-child? (u/combine-with :and
+                      :add-child? (combine/with :and
                                                   (children/count<= 2)
                                                   (children/depth<= 2)))
           tree (sut/grow opts)
@@ -45,7 +45,7 @@
 
   (testing "branch angles"
     (let [opts (assoc base-opts
-                      :add-child? (u/combine-with :and
+                      :add-child? (combine/with :and
                                                   (children/count<= 2)
                                                   (children/depth<= 2)))
           tree (sut/grow opts)

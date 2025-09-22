@@ -3,9 +3,9 @@
             [trees.tree :as tree]
             [trees.algo.angle :as angle]
             [trees.algo.children :as children]
+            [trees.algo.combine :as combine]
             [trees.algo.length :as length]
-            [trees.algo.jitter :as jitter]
-            [trees.util :as u]))
+            [trees.algo.jitter :as jitter]))
 
 (def width 600)
 (def height 600)
@@ -16,20 +16,20 @@
   [x (- y)])
 
 (def narrow-jittered-with-6-kids
-  (tree/grow {:add-child?     (u/combine-with :and
+  (tree/grow {:add-child?     (combine/with :and
                                             (children/count<= 6)
                                             (children/depth<= 4))
-              :branch-angle   (angle/with-vertical-trunk
-                                (u/combine-with +
+              :branch-angle   (tree/with-vertical-trunk
+                                (combine/with +
                                                 (angle/regularly-spread 120 6 0)
                                                 (jitter/even 10)))
               :branch-length  (length/ratio 200 1/2)}))
 (def depth-4-binomial
-  (tree/grow {:add-child?     (u/combine-with :and
+  (tree/grow {:add-child?     (combine/with :and
                                               (children/count<= 2)
                                               (children/depth<= 4))
               :branch-length (length/ratio 200 0.7)
-              :branch-angle  (angle/with-vertical-trunk
+              :branch-angle  (tree/with-vertical-trunk
                                (angle/regularly-spread 90 2 0))}))
 (defn setup []
   (q/background 0xDD)

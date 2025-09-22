@@ -2,6 +2,18 @@
   (:require [clojure.zip :as z]
             [trees.util :as u]))
 
+;; Note that base angle is 90 for trunk
+(def vertical-trunk (constantly 0))
+
+(defn with-vertical-trunk
+  "Returns a fn that uses vertical-trunk for depth 1, otherwise uses the 
+   provided angle-fn"
+  [angle-fn]
+  (fn branch-angle? [loc]
+    (if (= 1 (u/depth loc))
+      (vertical-trunk loc)
+      (angle-fn loc))))
+
 (defn base-angle
   "Takes a zipper to a new branch and returns the angle
    from which it should be calculating it's relative angle.
@@ -85,7 +97,7 @@
    Note that, within :children, branches are stored from the most recent as
    z/insert-child -> z/down is more efficient.
     
-   For now, assumes a single trunk (which is considered to have a depth of 1).
+   The trunk is considered to have a depth of 1.
    The parent zipper of the trunk is nil and considered depth 0."
   ([opts]
    (-> (insert-placeholder-branch nil)

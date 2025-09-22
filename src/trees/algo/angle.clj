@@ -1,18 +1,5 @@
 (ns trees.algo.angle
-  (:require [clojure.zip :as z]
-            [trees.util :as u]))
-
-;; Note that base angle is 90 for trunk
-(def vertical-trunk (constantly 0))
-
-(defn with-vertical-trunk
-  "Returns a fn that uses vertical-trunk for depth 1, otherwise uses the 
-   provided angle-fn"
-  [angle-fn]
-  (fn branch-angle? [loc]
-    (if (= 1 (u/depth loc))
-      (vertical-trunk loc)
-      (angle-fn loc))))
+  (:require [clojure.zip :as z]))
 
 (defn regularly-spread
   "Takes a spread between first and last branches, and the number of total branches
