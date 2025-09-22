@@ -1,18 +1,18 @@
 (ns trees.algo.length
   (:require [trees.util :as u]))
 
-(defn ratio
+(defn scale
   "Returns a branch-length function.
   
   Given a zipper positioned on a branch node where a child will be added,
   computes the child's length as:
   
-      base-length * (ratio ^ (depth - 1))
+      base-length * (scale ^ (depth - 1))
   
-  Thus, each successive branch is a fixed multiple (ratio) of its parent’s
-  length. A ratio < 1 produces shrinking branches, while a ratio > 1
+  Thus, each successive branch is a fixed multiple (scale) of its parent’s
+  length. A scale < 1 produces shrinking branches, while a scale > 1
   produces growing branches."
-  [initial-length ratio]
+  [initial-length scale]
   (fn branch-length [loc]
     (* initial-length
-       (Math/pow ratio (dec (u/depth loc))))))
+       (Math/pow scale (dec (u/depth loc))))))

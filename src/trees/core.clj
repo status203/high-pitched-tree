@@ -24,12 +24,12 @@
                                               (angle/regularly-spaced 120 6)
                                               (angle/offset -5)
                                               (jitter/even 10)))
-              :branch-length  (length/ratio 200 1/2)}))
+              :branch-length  (length/scale 200 1/2)}))
 (def depth-4-binomial
   (tree/grow {:add-child?     (combine/with :and
                                               (children/count<= 2)
                                               (children/depth<= 4))
-              :branch-length (length/ratio 200 0.7)
+              :branch-length (length/scale 200 0.7)
               :branch-angle  (tree/with-vertical-trunk
                                (angle/regularly-spaced 90 2))}))
 (defn setup []

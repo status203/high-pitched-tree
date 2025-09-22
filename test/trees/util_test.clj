@@ -20,3 +20,15 @@
       "Depth of trunk in trunk+branches should be 1")
   (is (= 2 (sut/depth mock/loc-two-branches-3))
       "Depth of leaf in trunk+branches should be 2"))
+
+(deftest first-child?-tests
+  (is (= true (sut/first-child? mock/loc-one-branch-2))
+      "First branch should be first child")
+  (is (= true (sut/first-child? mock/loc-two-branches-2))
+      "First of two branches should be first child")
+  (is (= false (sut/first-child? mock/loc-two-branches-3))
+      "Second of two branches should not be first child")
+  (is (= true (sut/first-child? mock/loc-trunk-only-1))
+      "Trunk should be considered first child (or root)")
+  (is (= true (sut/first-child? nil))
+      "Nil location should be considered first child"))

@@ -18,7 +18,7 @@
 (def base-opts
   {:branch-angle (sut/with-vertical-trunk
                    (angle/regularly-spaced 90 2))
-   :branch-length (length/ratio 100 0.7)
+   :branch-length (length/scale 100 0.7)
    :add-child? (combine/with :and
                                (children/count<= 2)
                                (children/depth<= 3))})

@@ -17,13 +17,18 @@
   [loc]
   (boolean (-> loc z/down)))
 
+(defn first-child?
+  "Returns whether the branch represented by the zipper is the first child of 
+   its parent"
+  [loc]
+  (if loc (not (z/right loc)) true))
+
 (defn depth
   "Returns the depth of a zipper"
-  ([loc] (depth loc 0))
-  ([loc acc]
-   (if loc
-     (recur (z/up loc) (inc acc))
-     acc)))
+  [loc]
+  (if loc
+    (-> loc z/path count inc)
+     0))
 
 (defn stochastic-round
   "Stochastically round x to an integer.
