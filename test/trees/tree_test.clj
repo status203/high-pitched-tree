@@ -17,7 +17,7 @@
 
 (def base-opts
   {:branch-angle (sut/with-vertical-trunk
-                   (angle/regularly-spread 90 2 -10))
+                   (angle/regularly-spaced 90 2))
    :branch-length (length/ratio 100 0.7)
    :add-child? (combine/with :and
                                (children/count<= 2)
@@ -50,7 +50,7 @@
                                                   (children/depth<= 2)))
           tree (sut/grow opts)
           angles (set (map :abs-angle (:children tree)))]
-      (is (= #{35 125} angles))))
+      (is (= #{45 135} angles))))
 
   (testing "single trunk (no children)"
     (let [opts {:branch-angle (constantly 0)
