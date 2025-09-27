@@ -3,31 +3,33 @@
             [trees.util :as u]))
 
 (defn regularly-spaced
-  "Takes a spread between first and last branches, and the number of total branches
-   and returns a fn that will space the branches evenly within that space."
+  "Returns a branch-angle function.
+
+  Takes a total spread (degrees) and number of branches, and returns a function
+  that, given a zipper positioned on a placeholder child branch, computes the
+  relative angle for that child. The zipper points to the child node whose angle
+  is being calculated, not its parent. Branches are spaced evenly within the spread."
   ([spread n]
-   (let [initial-angle (- (/ spread 2))
-         gap-angle     (/ spread (dec n))]
+   (let [initial-angle (double (- (/ spread 2)))
+         gap-angle     (double (/ spread (dec n)))]
      (fn branch-angle [loc]
        (if (z/right loc) gap-angle initial-angle)))))
 
 (defn offset
-  "Returns an angle fn that returns a constant amount"
+  "Returns a branch-angle function that always returns the given constant offset.
+   
+  The zipper points to the placeholder child node whose angle is being calculated."
   [deg]
-  (fn branch-angle [_loc] deg))
+  (fn branch-angle [_loc] (double deg)))
 
 (defn scale
-    "Returns a branch-angle function.
-    
-    Given a zipper positioned on a branch node where a child will be added,
-    computes the child's relative angle as:
-    
-        base-angle * (scale ^ (depth - 1))
-    
-    Thus, each successive branch is a fixed multiple (scale) of its parent’s
-    angle. A scale < 1 produces shrinking angles, while a scale > 1
-    produces growing angles"
-  [initial-angle scale]
-  (fn branch-length [loc]
-    (* initial-angle
+  "Returns a branch-angle function.
+
+  Given a zipper positioned on a placeholder child branch, computes the child's
+  relative angle as:
+
+      base-angle * (scale ^ (depth - 1))"
+  [base-angle scale]
+  (fn branch-angle [loc]
+    (* base-angle
        (Math/pow scale (dec (u/depth loc))))))

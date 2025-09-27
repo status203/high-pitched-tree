@@ -52,6 +52,7 @@
                                                          (angle/offset -5)
                                                          (jitter/even 10)))
                          :branch-length  (length/scale 200 1/2)}))
+  (show-tree (tree/grow (examples/lopsided-spiral)))
   (show-tree (tree/grow (examples/binary-symmetric)))
   (show-tree (tree/grow (examples/radial-fan)))
   )

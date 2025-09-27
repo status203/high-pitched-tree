@@ -10,6 +10,12 @@
   [node children]
   (assoc node :children children))
 
+(defn first-child?
+  "Returns whether the branch represented by the zipper is the first child of 
+   its parent"
+  [loc]
+  (if loc (not (z/right loc)) true))
+
 (def tree-zipper (partial z/zipper map? tree-zipper-children tree-zipper-make-node))
 
 (defn has-children?
@@ -17,18 +23,18 @@
   [loc]
   (boolean (-> loc z/down)))
 
-(defn first-child?
-  "Returns whether the branch represented by the zipper is the first child of 
-   its parent"
-  [loc]
-  (if loc (not (z/right loc)) true))
-
 (defn depth
   "Returns the depth of a zipper"
   [loc]
   (if loc
     (-> loc z/path count inc)
      0))
+
+(defn child-index
+ "Return the (1-based) index of a zipper representing a branch amongst that
+  branch's siblings"
+ [loc]
+ (-> loc z/rights count inc))
 
 (defn stochastic-round
   "Stochastically round x to an integer.

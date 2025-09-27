@@ -50,7 +50,7 @@
                                                   (children/depth<= 2)))
           tree (sut/grow opts)
           angles (set (map :abs-angle (:children tree)))]
-      (is (= #{45 135} angles))))
+      (is (= #{45.0 135.0} angles))))
 
   (testing "single trunk (no children)"
     (let [opts {:branch-angle (constantly 0)

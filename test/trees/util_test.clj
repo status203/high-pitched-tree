@@ -32,3 +32,13 @@
       "Trunk should be considered first child (or root)")
   (is (= true (sut/first-child? nil))
       "Nil location should be considered first child"))
+
+(deftest child-index-tests
+  (is (= 1 (sut/child-index mock/loc-trunk-only-1))
+      "Trunk should be first (and only) child")
+  (is (= 1 (sut/child-index mock/loc-one-branch-2))
+      "First branch should have index 1")
+  (is (= 1 (sut/child-index mock/loc-two-branches-2))
+      "First of two branches should have index 1")
+  (is (= 2 (sut/child-index mock/loc-two-branches-3))
+      "Second of two branches should have index 2"))
