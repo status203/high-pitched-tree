@@ -49,6 +49,29 @@
         frac (- x f)]
     (long (if (< (rand) frac) (inc f) f))))
 
+(defn reduce-zip
+  "Depth-first pre-order reduce over locs."
+  [f init loc0]
+  (loop [loc loc0, acc init]
+    (if (z/end? loc)
+      acc
+      (recur (z/next loc) (f acc loc)))))
+
+
+(defn bounds
+  "Given a tree. Returns a map of :min-x, :mox-x, :min-y, :max-y"
+  [tree]
+  (let [loc0 (tree-zipper tree)
+        step (fn bounds-step [{:keys [min-x min-y max-x max-y] :as acc} loc]
+                             (let [{[x1 y1] :start [x2 y2] :end} (z/node loc)]
+                               {:min-x (min min-x x1 x2)
+                                :min-y (min min-y y1 y2)
+                                :max-x (max max-x x1 x2)
+                                :max-y (max max-y y1 y2)}))]
+    (reduce-zip step
+              {:min-x ##Inf :min-y ##Inf :max-x ##-Inf :max-y ##-Inf}
+              loc0)))
+
 
 
 

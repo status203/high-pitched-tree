@@ -42,3 +42,13 @@
       "First of two branches should have index 1")
   (is (= 2 (sut/child-index mock/loc-two-branches-3))
       "Second of two branches should have index 2"))
+
+(deftest bounds-tests
+  (let [tree {:start [0 0] :end [10 10] :children
+              [{:start [10 10] :end [20 5] :children []}
+               {:start [10 10] :end [5 20] :children []}]}
+        bounds (sut/bounds tree)]
+    (is (= 0 (:min-x bounds)) "Minimum x should be 0")
+    (is (= 20 (:max-x bounds)) "Maximum x should be 20")
+    (is (= 0 (:min-y bounds)) "Minimum y should be 0")
+    (is (= 20 (:max-y bounds)) "Maximum y should be 20")))
