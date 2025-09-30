@@ -136,7 +136,7 @@
 ;;                                            (children/depth<= 2))}))
 
 (comment
-  (def opts {:scale :to-view})
+  (def opts {:scale :contain})
   (def show (partial show-tree opts))
   (show (tree/grow {:add-child?     (combine/with :and
                                                        (children/count<= 6)

@@ -15,8 +15,8 @@
 ;; ------------------------------------------------------------
 (defn binary-symmetric
   "Classic symmetric binary split.
-   Keys (defaults): {:angle0 32.0 :angle-decay 0.92 :len0 100.0 :len-decay 0.72
-                     :max-depth 12 :min-length 2.0}"
+   Defaults: {:angle0 32.0 :angle-decay 0.92 :len0 100.0 :len-decay 0.72
+              :max-depth 12 :min-length 2.0}"
   ([] (binary-symmetric {}))
   ([{:keys [angle0 angle-decay len0 len-decay max-depth min-length]
      :or   {angle0 32.0, angle-decay 0.92,
@@ -42,8 +42,8 @@
 ;; ------------------------------------------------------------
 (defn radial-fan
   "Evenly spaced k-ray fan at each node.
-   Keys: {:k 5 :spread0 160.0 :spread-decay 0.80 :len0 100.0 :len-decay 0.80
-          :max-depth 6}"
+   Defaults: {:k 5 :spread0 160.0 :spread-decay 0.80 :len0 100.0 :len-decay 0.80
+              :max-depth 6}"
   ([] (radial-fan {}))
   ([{:keys [k spread0 spread-decay len0 len-decay max-depth]
      :or   {k 5 spread0 160.0 spread-decay 0.80
@@ -64,7 +64,7 @@
                   (children/count<= k))}))
 
 (defn lopsided-spiral
-  "Run `tree/grow` with a quickly-tweakable lopsided/spiral-ish setup.
+  "Algos for a tweakable lopsided/spiral-ish setup.
 
    Options (all optional; sensible defaults match your example):
      :min-child-length   number   ;; threshold for children/length>= (default 5)
