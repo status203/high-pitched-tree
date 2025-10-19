@@ -95,3 +95,14 @@
                                  (length/of-parent trunk-length)
                                  (indexed/by-child ratios))}
    ))
+
+(def jittered-and-offset
+  {:add-child?     (combine/with :and
+                                 (children/count<= 6)
+                                 (children/depth<= 4))
+   :branch-angle   (tree/with-vertical-trunk
+                     (combine/with +
+                                   (angle/regularly-spaced 120 6)
+                                   (angle/offset -5)
+                                   (jitter/even 10)))
+   :branch-length  (length/scale 200 1/2)})
