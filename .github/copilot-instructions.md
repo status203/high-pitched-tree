@@ -44,9 +44,9 @@ Algorithm functions (expected shapes):
 ## Common workflows (build, test, debug)
 - Tests are standard clojure.test under `test/`. Run with your usual deps tool (this repo uses deps.edn):
   - To run all tests locally (local deps tool):
-    clojure -M:test
-  - To run a specific test file, e.g. `tree_test.clj`:
-    clojure -M:test:test/trees/tree_test.clj
+    `clojure -X:test`
+  - To run tests for specific namespaces e.g. core and util:
+    `clojure -X:test :nses '[trees.core-test trees.util-test]'`
 
   Note: If your environment uses `lein` or a different alias, prefer the repo's `deps.edn` conventions.
 

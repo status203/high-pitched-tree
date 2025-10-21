@@ -2,7 +2,7 @@
  :deps    {org.clojure/clojure {:mvn/version "1.12.3"}
            quil/quil {:mvn/version "4.3.1563"}}
  :aliases
- {:dev  {:extra-paths ["test/"]
+ {:dev  {:extra-paths ["test/" "dev/"]
          :extra-deps  {criterium/criterium {:mvn/version "0.4.6"}}}
   :test {:extra-paths ["test"]
          :extra-deps {io.github.cognitect-labs/test-runner

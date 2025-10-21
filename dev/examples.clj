@@ -1,4 +1,4 @@
-(ns dev.examples
+(ns examples
   "Behaviour-named presets for `tree/grow`."
   (:require
    [trees.tree :as tree]
@@ -38,7 +38,7 @@
                   (children/count<= 2))}))
 
 ;; ------------------------------------------------------------
-;; radial-fan — one tier of k evenly spaced children
+;; radial-fan — k evenly spaced children
 ;; ------------------------------------------------------------
 (defn radial-fan
   "Evenly spaced k-ray fan at each node.

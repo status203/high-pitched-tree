@@ -1,11 +1,9 @@
-(ns dev.output
+(ns viz.output
   (:require
-   [quil.applet :as applet]
    [quil.core :as q]
-   [quil.sketch :as sketch]
 
-   [dev.draw :as draw]
-   [dev.examples :as examples]
+   [viz.draw :as draw]
+   [examples]
 
    [trees.tree :as tree]))
 

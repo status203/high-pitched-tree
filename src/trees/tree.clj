@@ -59,19 +59,30 @@
    :end, :rel-angle, :abs-angle and :length from the provided algorithm fns.
    Returns the updated zipper location."
   [loc {:keys [branch-angle branch-length]}]
-  (let [node      (z/node loc)
-        base      (base-angle loc)
-        rel-angle (branch-angle loc)
-        abs-angle (+ base rel-angle)
-        length    (branch-length loc)
-        start     (:start node)
-        end       (calc-end start abs-angle length)]
-    (z/replace loc
-               (assoc node
-                      :end       end
-                      :rel-angle rel-angle
-                      :abs-angle abs-angle
-                      :length    length))))
+  ;; helper to apply angle-related properties
+  (letfn [(apply-angle [zloc]
+            (let [node  (z/node zloc)
+                  base  (base-angle zloc)
+                  rel   (branch-angle zloc)
+                  abs   (+ base rel)]
+              (z/replace zloc (assoc node
+                                     :rel-angle rel
+                                     :abs-angle abs))))
+
+          ;; helper to apply length/end properties (may depend on angle already set)
+          (apply-length [zloc]
+            (let [node  (z/node zloc)
+                  start (:start node)
+                  abs   (:abs-angle node)
+                  len   (branch-length zloc)
+                  end   (calc-end start abs len)]
+              (z/replace zloc (assoc node
+                                     :length len
+                                     :end    end))))]
+
+    (-> loc
+        (apply-angle)
+        (apply-length))))
 
 (defn grow
   "opts (all are mandatory):
