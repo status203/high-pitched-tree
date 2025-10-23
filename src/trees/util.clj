@@ -72,6 +72,17 @@
               {:min-x ##Inf :min-y ##Inf :max-x ##-Inf :max-y ##-Inf}
               loc0)))
 
+(defn as-fn
+  "Normalise v into a function of one argument.
+   If v is a function it is returned. If v is nil the provided default
+   is returned wrapped as a constant function. If v is a non-nil constant
+   the constant is wrapped as a function returning that value." 
+  [v default]
+  (cond
+    (fn? v) v
+    (nil? v) (constantly default)
+    :else    (constantly v)))
+
 
 
 

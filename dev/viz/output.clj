@@ -30,7 +30,7 @@
 
 ;; Example usage:
 ;; (show-tree
-;;   (tree/grow {:branch-length (length/scale 100 0.7)
+;;   (tree/grow {:branch-length (curve/scale 100 0.7)
 ;;               :branch-angle  (tree/with-vertical-trunk
 ;;                                (angle/regularly-spaced 90 2))
 ;;               :add-child?    (combine/with :and

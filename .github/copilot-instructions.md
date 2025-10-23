@@ -55,6 +55,27 @@ Algorithm functions (expected shapes):
 - Use zippers for tree manipulation; helpers in `trees.util` should be reused (e.g. `depth`, `has-children?`, `tree-zipper`).
 - When adding functions that operate on a branch, accept a zipper loc and return plain values (angles, lengths, booleans). This keeps them composable with `combine/with` and `by-depth`.
 
+## Colour API and accepted formats
+
+This project represents colours internally as an RGBA vector of 0..255 integers: `[r g b a]`.
+
+Helpers in `src/trees/algo/colour.clj` accept and normalise a variety of inputs:
+
+- Hex strings: "#RGB", "#RGBA", "#RRGGBB", "#RRGGBBAA".
+- Integer ARGB values (e.g. `0xAARRGGBB`).
+- Vectors of integers `[r g b]` or `[r g b a]` where channels are 0..255.
+
+Public helpers you'll likely use:
+
+- `hex->rgba` — parses hex strings or ARGB ints into `[r g b a]`.
+- `ensure-rgba` — flexible normaliser; returns 4-entry `[r g b a]` vector.
+- rgba->hex8 — formats `[r g b a]` into `#RRGGBBAA`.
+
+When supplying colours in option maps (for example, `:branch-colour`), accept
+either a constant colour literal or a function of a zipper loc; the utility
+`trees.util/as-fn` will normalise constants into functions so the code calling
+the option can treat it uniformly.
+
 ## Examples (copyable snippets from repo)
 
 Grow a basic tree (from tests):
@@ -65,7 +86,7 @@ Grow a basic tree (from tests):
                     ;; algorithms live in `src/trees/algo/` and should return
                     ;; values of the expected contract for the role
                     (trees.algo.angle/regularly-spaced 90 2))
-   :branch-length (trees.algo.length/scale 100 0.7)
+  :branch-length (trees.algo.curve/scale 100 0.7)
    :add-child?    (trees.algo.combine/with :and
                    (trees.algo.children/count<= 2)
                    (trees.algo.children/depth<= 3))})

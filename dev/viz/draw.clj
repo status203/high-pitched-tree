@@ -46,9 +46,14 @@
    - Y always baseline (y=0 at bottom) then clamped to fit
 
    opts:
-     :scale   :none (default) | :to-fit | :to-view | :contain | :cover
-     :padding integer px (default 16)
-     :debug   truthy → draw viewport & placed box outlines"
+     :scale   - How to fit the tree into the viewport:
+                :none    - No scaling (1:1, tree may overflow or be tiny)
+                :to-fit  - Shrink if needed to fit, never enlarge (max scale 1.0)
+                :to-view - Enlarge if needed to fill, never shrink (min scale 1.0)
+                :contain - Scale to fit entirely within viewport (default)
+     :padding - Integer px, border around viewport (default 20)
+     :bg      - Background colour as integer ARGB (default 0xDD)
+     :debug   - Truthy → draw viewport & placed box outlines"
   [tree {:keys [width height scale padding debug bg] 
          :or   {width 600, height 600, padding 20, debug false,
                 scale :none, bg 0xDD}}]
@@ -93,6 +98,10 @@
 
       (doseq [b (tree-seq map? :children tree)]
         (when-let [[x2 y2] (:end b)]
-          (let [[x1 y1] (:start b)]
+          (let [[x1 y1] (:start b)
+                w       (double (or (:width b) 1.0))
+                [r g b a] (or (:colour b) [0 0 0 255])]
+            (q/stroke r g b a)
+            (q/stroke-weight w)
             (q/line x1 y1 x2 y2))))
       (q/pop-matrix))))

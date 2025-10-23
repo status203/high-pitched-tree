@@ -56,11 +56,14 @@
 
 (defn finalise-branch
   "Given a zipper location at a branch, populates the branch's
-   :end, :rel-angle, :abs-angle and :length from the provided algorithm fns.
-   Returns the updated zipper location."
-  [loc {:keys [branch-angle branch-length]}]
-  ;; helper to apply angle-related properties
-  (letfn [(apply-angle [zloc]
+   :end, :rel-angle, :abs-angle, :length, :width and :colour from the
+   provided algorithm fns. Width and colour are optional and default to
+   1 and black respectively. Returns the updated zipper location."
+  [loc {:keys [branch-angle branch-length branch-width branch-colour]}]
+  ;; helpers can use previously set properties if desired. Properties are set in
+  ;; the order:
+  ;; angle->length->width->colour 
+ (letfn [(apply-angle [zloc]
             (let [node  (z/node zloc)
                   base  (base-angle zloc)
                   rel   (branch-angle zloc)
@@ -69,7 +72,6 @@
                                      :rel-angle rel
                                      :abs-angle abs))))
 
-          ;; helper to apply length/end properties (may depend on angle already set)
           (apply-length [zloc]
             (let [node  (z/node zloc)
                   start (:start node)
@@ -78,11 +80,25 @@
                   end   (calc-end start abs len)]
               (z/replace zloc (assoc node
                                      :length len
-                                     :end    end))))]
+                                     :end    end))))
+
+          (apply-width [zloc]
+            (let [node     (z/node zloc)
+                  width-fn (u/as-fn branch-width 1)
+                  w        (width-fn zloc)]
+              (z/replace zloc (assoc node :width w))))
+
+          (apply-colour [zloc]
+            (let [node       (z/node zloc)
+                  colour-fn (u/as-fn branch-colour [0 0 0 255])
+                  c         (colour-fn zloc)]
+              (z/replace zloc (assoc node :colour c))))]
 
     (-> loc
         (apply-angle)
-        (apply-length))))
+        (apply-length)
+        (apply-width)
+        (apply-colour))))
 
 (defn grow
   "opts (all are mandatory):

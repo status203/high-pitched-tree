@@ -52,3 +52,12 @@
     (is (= 20 (:max-x bounds)) "Maximum x should be 20")
     (is (= 0 (:min-y bounds)) "Minimum y should be 0")
     (is (= 20 (:max-y bounds)) "Maximum y should be 20")))
+
+(deftest as-fn-tests
+    (is (= 1 ((sut/as-fn 1 5) nil))
+            "Constant value should be wrapped and return the constant")
+    (is (= 5 ((sut/as-fn nil 5) nil))
+            "Nil should default to provided default")
+        (let [f (constantly :ok)]
+            (is (= :ok ((sut/as-fn f :x) nil))
+                    "Function should be returned as-is")))

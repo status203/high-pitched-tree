@@ -1,3 +1,5 @@
 {:lint-as
  {trees.algo.combine/by-depth clojure.core/def
+  trees.algo.combine/by-length clojure.core/def
+  trees.algo.combine/by-width clojure.core/def
   quil.core/defsketch clojure.core/def}}

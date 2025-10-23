@@ -42,3 +42,22 @@
   [vs]
   (fn [loc]
     (nth-clamped vs (u/child-index loc))))
+
+;; ------------------------------------------------------------
+;; Accessors - extract commones values from zipper locations
+;; ------------------------------------------------------------
+
+(defn depth
+  "Extract the depth of the branch at loc (1-based, trunk = 1)."
+  [loc]
+  (u/depth loc))
+
+(defn length
+  "Extract the :length of the branch at loc."
+  [loc]
+  (-> loc z/node :length))
+
+(defn width
+  "Extract the :width of the branch at loc."
+  [loc]
+  (-> loc z/node :width))
