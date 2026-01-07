@@ -89,13 +89,14 @@
   "Convenience wrapper for building routers based on branch :width."
   [name & pairs]
   `(by ~name (fn [~'loc] (:width (z/node ~'loc))) ~@pairs))
+
 (defn with
   "Lifts an operator [X] to work on the results [zipper]->X
    
    Use :and/:or for predicates as `and`/`or` are macros"
   [op & fs]
   (cond
-    ;; AND: stop on first falsey
+    ;; AND: returns false on first falsey value, otherwise returns true
     (= op :and)
     (fn [loc]
       (loop [fs fs]
@@ -106,7 +107,7 @@
               (recur (rest fs))
               false)))))
 
-    ;; OR: stop on first truthy, return that truthy value
+    ;; OR: returns true on first truthy value, otherwise returns false
     (= op :or)
     (fn [loc]
       (loop [fs fs]
@@ -114,7 +115,7 @@
           false
           (let [v ((first fs) loc)]
             (if v
-              v
+              true
               (recur (rest fs)))))))
 
     ;; Any plain function op (e.g. +, max) → evaluate all
