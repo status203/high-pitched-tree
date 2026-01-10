@@ -1,6 +1,8 @@
 (ns viz.draw
   (:require
-   [trees.util :as util]))
+   [trees.util :as util]
+   [viz.quil]))
+(viz.quil/ensure-quil!)
 
 ;; Calculation prefixes
 ;; m - model. I.e. the tree
@@ -8,21 +10,6 @@
 ;; r - ratio e.g viewport width / model width - vw / mw
 ;; s - scaled box - the model after scaling
 ;; p - placement
-
-(defn- ensure-quil!
-  "Try to require quil.core; if missing, use add-libs to install it and retry."
-  []
-  (try
-    (require '[quil.core :as q])
-    (catch Exception _
-      (try
-        (require '[clojure.repl.deps])
-        #_{:clj-kondo/ignore [:unresolved-symbol]}
-        (clojure.repl.deps/add-libs '{quil/quil {:mvn/version "4.3.1563"}})
-        (require '[quil.core :as q])
-        (catch Exception e
-          (throw (ex-info "Quil not on classpath; add to deps or enable network for add-libs"
-                          {:cause e})))))))
 
 (defn- clamp [lo x hi] (max lo (min x hi)))
 
@@ -51,7 +38,6 @@
   [Rt Rh sh s min-y]
   (let [py0 (- (+ Rt Rh) sh (* s min-y))]
     (clamp Rt py0 (- (+ Rt Rh) sh))))
-(ensure-quil!)
 
 (defn draw-tree
   "Draw TREE with:
@@ -67,10 +53,9 @@
      :padding - Integer px, border around viewport (default 20)
      :bg      - Background colour as integer ARGB (default 0xDD)
      :debug   - Truthy → draw viewport & placed box outlines"
-  [tree {:keys [width height scale padding debug bg] 
+  [tree {:keys [width height scale padding debug bg]
          :or   {width 600, height 600, padding 20, debug false,
                 scale :none, bg 0xDD}}]
-  (ensure-quil!)
   (when tree
     (let [{:keys [min-x min-y max-x max-y]} (util/bounds tree)
           mw  (max 0.0 (- max-x min-x))
@@ -101,7 +86,7 @@
         (q/no-fill)
         (q/stroke 200) (q/rect vl vt vw vh)   ; viewport
         (q/stroke 150) (q/rect px py sw sh)) ; placed box
-      
+
       (q/push-matrix)
       ;; move to top-left of placed box, but set baseline for y-flip
       (q/translate px (+ py sh))

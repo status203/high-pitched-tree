@@ -2,22 +2,9 @@
   (:require
    [viz.draw :as draw]
    [examples]
-   [trees.tree :as tree]))
-
-(defn- ensure-quil!
-  "Try to require quil.core; if missing, use add-libs to install it and retry."
-  []
-  (try
-    (require '[quil.core :as q])
-    (catch Exception _
-      (try
-        (require '[clojure.repl.deps])
-        #_{:clj-kondo/ignore [:unresolved-symbol]}
-        (clojure.repl.deps/add-libs '{quil/quil {:mvn/version "4.3.1563"}})
-        (require '[quil.core :as q])
-        (catch Exception e
-          (throw (ex-info "Quil not on classpath; add to deps or enable network for add-libs"
-                          {:cause e})))))))
+   [trees.tree :as tree]
+   [viz.quil]))
+(viz.quil/ensure-quil!)
 
 (def default-opts
   {:width   750
@@ -26,7 +13,6 @@
    :scale   :contain
    :bg      0xDD
    :debug   false})
-(ensure-quil!)
 
 (defn show-tree
   "Launch a Quil sketch to draw the given tree."
@@ -51,8 +37,6 @@
 ;;                                            (children/depth<= 2))}))
 
 (comment
-  *ns*
-  (find-ns 'examples)
   (def show (partial show-tree {}))
   (show (tree/grow (examples/lopsided-spiral)))
   (show (tree/grow (examples/binary-symmetric)))
