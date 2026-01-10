@@ -1,6 +1,5 @@
 (ns trees.algo.angle
-  (:require [clojure.zip :as z]
-            [trees.util :as u]))
+  (:require [clojure.zip :as z]))
 
 (defn regularly-spaced
   "Returns a branch-angle function.
@@ -22,14 +21,3 @@
   [deg]
   (fn branch-angle [_loc] (double deg)))
 
-(defn scale
-  "Returns a branch-angle function.
-
-  Given a zipper positioned on a placeholder child branch, computes the child's
-  relative angle as:
-
-      base-angle * (scale ^ (depth - 1))"
-  [base-angle scale]
-  (fn branch-angle [loc]
-    (* base-angle
-       (Math/pow scale (dec (u/depth loc))))))

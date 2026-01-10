@@ -1,16 +1,28 @@
 (ns viz.draw
   (:require
-   [quil.core :as q]
- 
    [trees.util :as util]))
 
 ;; Calculation prefixes
 ;; m - model. I.e. the tree
 ;; v - viewport
-;; r - ratio e.g viewport width / model width - vw - mw
+;; r - ratio e.g viewport width / model width - vw / mw
 ;; s - scaled box - the model after scaling
 ;; p - placement
 
+(defn- ensure-quil!
+  "Try to require quil.core; if missing, use add-libs to install it and retry."
+  []
+  (try
+    (require '[quil.core :as q])
+    (catch Exception _
+      (try
+        (require '[clojure.repl.deps])
+        #_{:clj-kondo/ignore [:unresolved-symbol]}
+        (clojure.repl.deps/add-libs '{quil/quil {:mvn/version "4.3.1563"}})
+        (require '[quil.core :as q])
+        (catch Exception e
+          (throw (ex-info "Quil not on classpath; add to deps or enable network for add-libs"
+                          {:cause e})))))))
 
 (defn- clamp [lo x hi] (max lo (min x hi)))
 
@@ -39,6 +51,7 @@
   [Rt Rh sh s min-y]
   (let [py0 (- (+ Rt Rh) sh (* s min-y))]
     (clamp Rt py0 (- (+ Rt Rh) sh))))
+(ensure-quil!)
 
 (defn draw-tree
   "Draw TREE with:
@@ -57,6 +70,7 @@
   [tree {:keys [width height scale padding debug bg] 
          :or   {width 600, height 600, padding 20, debug false,
                 scale :none, bg 0xDD}}]
+  (ensure-quil!)
   (when tree
     (let [{:keys [min-x min-y max-x max-y]} (util/bounds tree)
           mw  (max 0.0 (- max-x min-x))

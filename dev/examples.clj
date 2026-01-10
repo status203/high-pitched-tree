@@ -31,7 +31,7 @@
     (tree/with-vertical-trunk
       (combine/with *                     ;; unit fan × depth-scaled spread
                     (angle/regularly-spaced 2 2)
-                    (angle/scale angle0 angle-decay)))
+                    (curve/scale angle0 angle-decay)))
 
     :branch-length (curve/scale len0 len-decay)
 
@@ -63,7 +63,7 @@
     (tree/with-vertical-trunk
       (combine/with *
                     (angle/regularly-spaced 1 k)
-                    (angle/scale spread0 spread-decay)))
+                    (curve/scale spread0 spread-decay)))
 
     :branch-length  (curve/scale len0 len-decay)
 
@@ -96,10 +96,8 @@
             angles          [-50 65]
             ratios          [0.65 0.8]
             trunk-length    150
-      ;; thin-ish and slow taper for a willowy look
             width0          4.0
             width-decay     0.90
-      ;; tasteful greens (deep → light pastel)
             start-colour    "#2E7D32"   ; deep green
             finish-colour   "#A5D6A7"}}] ; light minty green
    {:add-child?    (combine/with :and
