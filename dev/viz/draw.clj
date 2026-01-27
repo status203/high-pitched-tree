@@ -2,7 +2,10 @@
   (:require
    [trees.util :as util]
    [viz.quil]))
+; Ensure quil is loaded.
 (viz.quil/ensure-quil!)
+; Quil should have been found and loaded by this point. Make kondo happy.
+(require '[quil.core :as q])
 
 ;; Calculation prefixes
 ;; m - model. I.e. the tree

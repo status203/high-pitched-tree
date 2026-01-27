@@ -4,7 +4,10 @@
    [examples]
    [trees.tree :as tree]
    [viz.quil]))
+; Ensure quil is loaded.
 (viz.quil/ensure-quil!)
+; Quil should have been found and loaded by this point. Make kondo happy.
+(require '[quil.core :as q])
 
 (def default-opts
   {:width   750
@@ -38,7 +41,7 @@
 
 (comment
   (def show (partial show-tree {}))
-  (show (tree/grow (examples/lopsided-spiral)))
+  (show (tree/grow (examples/lopsidegd-spiral)))
   (show (tree/grow (examples/binary-symmetric)))
   (show (tree/grow (examples/radial-fan)))
   (show (tree/grow examples/jittered-and-offset))
