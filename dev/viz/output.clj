@@ -41,7 +41,7 @@
 
 (comment
   (def show (partial show-tree {}))
-  (show (tree/grow (examples/lopsidegd-spiral)))
+  (show (tree/grow (examples/lopsided-spiral)))
   (show (tree/grow (examples/binary-symmetric)))
   (show (tree/grow (examples/radial-fan)))
   (show (tree/grow examples/jittered-and-offset))

@@ -118,7 +118,8 @@ clojure -M:test:test/trees/tree_test.clj
 The `dev/` folder contains utilities and presets for exploring trees and rendering them with Quil.
 
 - `dev/examples.clj` — behavior-named presets for `trees.tree/grow` (e.g. `binary-symmetric`, `radial-fan`, `lopsided-spiral`). These return option maps suitable to pass directly to `trees.tree/grow`.
-- `dev/draw.clj` — a small Quil-aware renderer. The central helper is `draw-tree` which:
+- `dev/output.clj` - code to dynamically include quil and display trees via quil (uses helpers from `dev/draw.clj`)
+- `dev/draw.clj` — The central helper is `draw-tree` which:
   - computes model bounds via `trees.util/bounds`,
   - chooses scaling and placement (options: `:scale` -> `:none|:to-fit|:to-view|:contain|:cover`),
   - draws lines for each branch end/start pair.
@@ -145,7 +146,5 @@ Quick REPL preview (example): start a REPL in the project root and evaluate the 
 ```
 
 Notes:
-- The sketch above uses `draw/draw-tree` to render a static tree stored in `t`. Swap the preset (for example, `(examples/radial-fan)`) or regenerate `t` to see different behaviours.
-- The repo already requires Quil in `dev/draw.clj`, so start a plain REPL with `clojure` (or your preferred tool). If Quil isn't available in your environment, ensure the `deps.edn` includes Quil under the aliases you use to start the REPL.
+- The sketch above uses `draw/draw-tree` to render a static tree stored in `t`. Swap the preset (for example, `(examples/radial-fan)`) or regenerate `t` to see different behaviours (where paramaterisation has changed, or there are random components).
 
-If anything here is unclear or you'd like additional examples (rendering, CLI usage, or visual output under `dev/`), tell me which area to expand and I'll iterate.
