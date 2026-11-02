@@ -30,7 +30,7 @@ Algo functions are passed a zipper to the current node (new node or potential pa
 
 ## Examples
 
-Examples that can be passed to `trees.tree/grow`. See `dev/tree/output.clj` for examples of growing a tree, and drawing with [Quil](https://github.com/quil/quil).
+Examples that can be passed to `trees.tree/grow`. See `dev/viz/output.clj` for examples of growing a tree, and drawing with [Quil](https://github.com/quil/quil).
 
 ### Lopsided Spiral
 
@@ -139,10 +139,10 @@ Examples that can be passed to `trees.tree/grow`. See `dev/tree/output.clj` for 
 The library splits growth logic into focused modules under `src/trees/algo/`:
 
 - **`angle.clj`** - functions that return branch angles (degrees, clockwise)
-  - `regularly-spaced`, `offset`, `scale`
+  - `regularly-spaced`, `offset`
   
 - **`length.clj`** - functions that return branch lengths
-  - `of-parent`, `scale`
+  - `of-parent`
   
 - **`children.clj`** - predicates that decide whether to add a child
   - `count<=`, `depth<=`, `length>=`
@@ -178,10 +178,11 @@ The `dev/` folder contains presets and rendering helpers:
 **Drawing**: Use `dev/viz/draw.clj` to render with Quil:
 
 ```clojure
-;; At the REPL:
-(require '[quil.core :as q]
-         '[dev.viz.draw :as draw]
-         '[dev.examples :as examples]
+;; At a REPL started with the :dev alias (e.g. clj -M:dev).
+;; viz.draw loads first: it adds Quil to the classpath if it's missing.
+(require '[viz.draw :as draw]
+         '[quil.core :as q]
+         '[examples]
          '[trees.tree :as tree])
 
 (def my-tree (atom (tree/grow (examples/lopsided-spiral))))
